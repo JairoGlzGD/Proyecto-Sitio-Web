@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Laboratorio y guía interactiva de Subneteo FLSM en cinco pasos: teoría, inspector binario de 32 bits, simulador de subredes y práctica evaluada sin plantillas genéricas.">
+    <title>FLSM Lab & Guide | Subneteo IPv4 en Cinco Pasos</title>
+    <link rel="stylesheet" href="css/estilo.css">
+    <script src="js/cuestionario.js" defer></script>
+</head>
+<body id="inicio">
+    <a class="saltar-contenido" href="#contenido">Saltar al contenido principal</a>
+
+    <!-- Cabecera técnica de navegación -->
+    <header class="cabecera">
+        <div class="contenedor barra">
+            <a class="marca" href="#inicio" aria-label="FLSM Lab, ir al inicio">
+                <span class="logotipo" aria-hidden="true">/27</span>
+                <div class="marca-info">
+                    <strong>FLSM Lab</strong>
+                    <small>Subneteo IPv4</small>
+                </div>
+            </a>
+            <nav aria-label="Navegación principal">
+                <ul>
+                    <li><a href="#que-es">Conceptos</a></li>
+                    <li><a href="#pasos">Guía 5 Pasos</a></li>
+                    <li><a href="#ejemplo">Ejemplo /27</a></li>
+                    <li><a href="#laboratorio">Laboratorio</a></li>
+                    <li><a href="#practica">Autoevaluación</a></li>
+                    <li><a href="#metodologia">Metodología</a></li>
+                    <li><a href="#recursos">Fuentes RFC</a></li>
+                </ul>
+            </nav>
+            <div class="barra-acciones">
+                <button type="button" class="boton-tema" id="btnTema" aria-label="Alternar tema claro u oscuro">
+                    <span id="iconoTema" aria-hidden="true">🌙</span>
+                </button>
+                <a class="boton boton-azul" href="#laboratorio">Abrir Simulador <span aria-hidden="true">→</span></a>
+            </div>
+        </div>
+    </header>
+
+    <main id="contenido">
+        <!-- Portada / Hero Técnico -->
+        <section class="portada" aria-labelledby="titulo-principal">
+            <div class="contenedor portada-interior">
+                <div class="portada-texto">
+                    <p class="ruta"><a href="#inicio">Inicio</a><span aria-hidden="true"> / </span>Arquitectura de Redes e IPv4</p>
+                    <div class="etiquetas">
+                        <span class="badge badge-blue">IPv4 Subnetting</span>
+                        <span class="badge badge-amber">Método de 5 Pasos</span>
+                        <span class="badge badge-emerald">Metodología Maybel Gil Álvarez</span>
+                    </div>
+                    <h1 id="titulo-principal">Aprende a dividir redes IPv4.<br><span>Sin fórmulas oscuras.</span></h1>
+                    <p class="introduccion">Domina el método de Máscara de Subred de Longitud Fija (FLSM). Comprende la transición de bits, calcula el número mágico y experimenta con nuestro simulador y verificador en vivo.</p>
+                    <div class="acciones">
+                        <a class="boton boton-azul" href="#pasos">Iniciar Guía Paso a Paso <span aria-hidden="true">→</span></a>
+                        <a class="boton boton-contorno" href="#laboratorio">Explorar Inspector de Bits</a>
+                    </div>
+                    <p class="portada-nota">5 pasos pedagógicos · Inspector reactivo de 32 bits · Simulador dinámico · EDT documentada</p>
+                </div>
+
+                <!-- Diagrama de visualización de red dividida -->
+                <div class="diagrama-portada" aria-label="Diagrama esquemático: Red 192.168.5.0/24 dividida uniformemente en ocho subredes /27 de 32 direcciones cada una">
+                    <p class="diagrama-etiqueta">DE UNA RED CLASE C A OCHO SUBREDES FLSM</p>
+                    <div class="red-original">
+                        <span>RED ORIGINAL DE ORIGEN</span>
+                        <strong>192.168.5.0<span>/24</span></strong>
+                        <small>256 direcciones totales (254 hosts)</small>
+                    </div>
+                    <div class="conexion" aria-hidden="true"></div>
+                    <div class="subredes-portada">
+                        <div><span>01</span><strong>.0/27</strong></div>
+                        <div><span>02</span><strong>.32/27</strong></div>
+                        <div><span>03</span><strong>.64/27</strong></div>
+                        <div><span>04</span><strong>.96/27</strong></div>
+                        <div><span>05</span><strong>.128/27</strong></div>
+                        <div><span>06</span><strong>.160/27</strong></div>
+                        <div><span>07</span><strong>.192/27</strong></div>
+                        <div><span>08</span><strong>.224/27</strong></div>
+                    </div>
+                    <p class="diagrama-pie">
+                        <span class="punto" aria-hidden="true"></span>
+                        Misma máscara (255.255.255.224) · Salto constante de 32
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="contenedor distribucion">
+            <!-- Barra lateral de navegación / Índice -->
+            <aside class="indice" aria-labelledby="titulo-indice">
+                <p class="sobretexto">CONTENIDO</p>
+                <h2 id="titulo-indice">Estructura del Recurso</h2>
+                <nav aria-label="Índice de navegación interna">
+                    <ol>
+                        <li><a href="#que-es">Qué es FLSM</a></li>
+                        <li><a href="#conceptos">Conceptos Clave</a></li>
+                        <li><a href="#pasos">El Método en 5 Pasos</a></li>
+                        <li><a href="#ejemplo">Ejemplo Resuelto (/27)</a></li>
+                        <li><a href="#laboratorio">Laboratorio y Simulador</a></li>
+                        <li><a href="#practica">Autoevaluación</a></li>
+                        <li><a href="#errores">Errores Frecuentes</a></li>
+                        <li><a href="#metodologia">Metodología y EDT</a></li>
+                        <li><a href="#recursos">Fuentes y RFCs</a></li>
+                    </ol>
+                </nav>
+                <div class="nota-indice">
+                    <strong>Recomendación formativa</strong>
+                    <p>Realiza los cálculos del ejemplo en una hoja y luego comprueba tus respuestas con el simulador interactivo.</p>
+                </div>
+                <a class="volver" href="#inicio">↑ Regresar al inicio</a>
+            </aside>
+
+            <!-- Cuerpo principal de contenido didáctico -->
+            <article class="articulo" aria-label="Guía técnica interactiva de subneteo FLSM">
+                <!-- 01 / Fundamentos de FLSM -->
+                <section class="caja" id="que-es">
+                    <p class="sobretexto">01 / FUNDAMENTOS</p>
+                    <h2>¿Qué es la Máscara de Subred de Longitud Fija (FLSM)?</h2>
+                    <p><strong>FLSM</strong> (<em>Fixed Length Subnet Mask</em>) es una técnica de subneteo en IPv4 donde una red principal se subdivide en varias subredes que comparten <strong>exactamente la misma máscara de subred y la misma longitud de prefijo CIDR</strong>. Cada subred resultante tiene exactamente la misma capacidad total de direcciones IP.</p>
+                    
+                    <div class="tarjetas">
+                        <div class="tarjeta">
+                            <span class="numero">=</span>
+                            <h3>Tamaño Uniforme</h3>
+                            <p>Todos los bloques contienen el mismo número de direcciones IP totales y útiles.</p>
+                        </div>
+                        <div class="tarjeta">
+                            <span class="numero">/</span>
+                            <h3>Máscara Invariable</h3>
+                            <p>El prefijo CIDR calculado se aplica sin excepción a todas las subredes generadas.</p>
+                        </div>
+                        <div class="tarjeta">
+                            <span class="numero">+</span>
+                            <h3>Salto Regular</h3>
+                            <p>El incremento de direcciones de red (número mágico) es constante y predecible.</p>
+                        </div>
+                    </div>
+
+                    <div class="aviso">
+                        <strong>¿Cuándo usar FLSM vs. VLSM?</strong> FLSM es ideal cuando las subredes o departamentos de una organización requieren capacidades similares de equipos (por ejemplo, aulas de cómputo con 30 puestos cada una). Cuando los segmentos tienen diferencias extremas (por ejemplo, enlaces punto a punto de 2 hosts frente a redes de 500 hosts), se utiliza VLSM (<em>Variable Length Subnet Mask</em>) para optimizar el espacio de direcciones.
+                    </div>
+                </section>
+
+                <!-- 02 / Conceptos Previos -->
+                <section class="caja" id="conceptos">
+                    <p class="sobretexto">02 / VOCABULARIO TÉCNICO</p>
+                    <h2>Conceptos Previos Esenciales</h2>
+                    <p>Antes de aplicar el procedimiento aritmético, familiarízate con las seis variables fundamentales del direccionamiento IPv4:</p>
+                    
+                    <dl class="conceptos">
+                        <div>
+                            <dt>Dirección IPv4</dt>
+                            <dd>Identificador numérico lógico de 32 bits, estructurado en cuatro octetos de 8 bits separados por puntos (ejemplo: <code>192.168.5.10</code>).</dd>
+                        </div>
+                        <div>
+                            <dt>Prefijo CIDR</dt>
+                            <dd>Notación que especifica la cantidad de bits pertenecientes a la porción de red (ejemplo: <code>/24</code> indica 24 bits de red y <code>32 &minus; 24 = 8</code> bits para hosts).</dd>
+                        </div>
+                        <div>
+                            <dt>Dirección de Red</dt>
+                            <dd>La primera dirección del bloque. Tiene todos los bits de host en cero (<code>0</code>) y sirve para enrutar el tráfico hacia esa subred. <strong>No puede asignarse a un dispositivo terminal.</strong></dd>
+                        </div>
+                        <div>
+                            <dt>Dirección de Broadcast</dt>
+                            <dd>La última dirección del bloque. Tiene todos los bits de host en uno (<code>1</code>) y se utiliza para enviar mensajes a todos los hosts de esa subred. <strong>No puede asignarse a un host.</strong></dd>
+                        </div>
+                        <div>
+                            <dt>Hosts Utilizables</dt>
+                            <dd>Rango de direcciones situadas estrictamente entre la dirección de red y la de broadcast. Su capacidad se calcula con la fórmula clásica <code>2<sup>h</sup> &minus; 2</code>.</dd>
+                        </div>
+                        <div>
+                            <dt>Bits Prestados (<em>n</em>)</dt>
+                            <dd>Bits tomados de la porción original de host y reasignados a la porción de red para generar <code>2<sup>n</sup></code> subredes independientes.</dd>
+                        </div>
+                    </dl>
+                    <p class="texto-pequeno">Alcance técnico: Este material trata subredes ordinarias con prefijos hasta <code>/30</code>. Los prefijos <code>/31</code> (enlaces punto a punto según RFC 3021) y <code>/32</code> (host individual) poseen reglas especiales y quedan fuera del alcance didáctico básico.</p>
+                </section>
+
+                <!-- 03 / Procedimiento en Cinco Pasos -->
+                <section class="caja" id="pasos">
+                    <p class="sobretexto">03 / PROCEDIMIENTO PASO A PASO</p>
+                    <h2>El Método de los Cinco Pasos</h2>
+                    <p>Aprende el procedimiento estándar de cálculo utilizando el caso de estudio oficial: <strong>Dividir la red <code>192.168.5.0/24</code> para obtener al menos 5 subredes con hasta 30 hosts útiles cada una</strong>.</p>
+                    
+                    <!-- Menú de pestañas de pasos -->
+                    <nav class="menu-pasos" aria-label="Seleccionar paso del procedimiento FLSM">
+                        <a href="#paso1" class="boton-paso activo" data-paso="0">1<span>Requerimientos</span></a>
+                        <a href="#paso2" class="boton-paso" data-paso="1">2<span>Bits Prestados</span></a>
+                        <a href="#paso3" class="boton-paso" data-paso="2">3<span>Nueva Máscara</span></a>
+                        <a href="#paso4" class="boton-paso" data-paso="3">4<span>Salto y Redes</span></a>
+                        <a href="#paso5" class="boton-paso" data-paso="4">5<span>Rangos y Broadcast</span></a>
+                    </nav>
+
+                    <!-- Paso 1 -->
+                    <div class="paso" id="paso1">
+                        <p class="etiqueta-paso">PASO 1 DE 5 · ANÁLISIS DE REQUERIMIENTOS</p>
+                        <h3 tabindex="-1">Identifica los Datos Base y las Necesidades</h3>
+                        <p>Recopila los parámetros iniciales del problema antes de realizar cualquier operación matemática:</p>
+                        <ul class="lista-datos">
+                            <li><strong>Red original:</strong> <code>192.168.5.0/24</code> (Clase C privada).</li>
+                            <li><strong>Subredes requeridas (<em>N</em>):</strong> Al menos <strong>5 segmentos</strong> independientes.</li>
+                            <li><strong>Capacidad requerida (<em>H</em>):</strong> Hasta <strong>30 hosts útiles</strong> por segmento.</li>
+                            <li><strong>Bits disponibles para host originalmente:</strong> <code>32 &minus; 24 = 8 bits</code>.</li>
+                        </ul>
+                        <div class="aviso">
+                            <strong>Principio FLSM:</strong> Dado que todas las subredes tendrán el mismo tamaño, el cálculo debe dimensionarse considerando el segmento que requiera la mayor cantidad de hosts.
+                        </div>
+                    </div>
+
+                    <!-- Paso 2 -->
+                    <div class="paso" id="paso2" hidden>
+                        <p class="etiqueta-paso">PASO 2 DE 5 · ARITMÉTICA DE BITS</p>
+                        <h3 tabindex="-1">Calcula los Bits Prestados (<em>n</em>)</h3>
+                        <p>Encuentra el menor número entero <em>n</em> tal que satisfaga la inecuación de potencias: <code>2<sup>n</sup> &ge; N</code> (subredes requeridas).</p>
+                        <div class="operaciones">
+                            <p>Para <em>n</em> = 1: <code>2<sup>1</sup> = 2</code> subredes <span>(Insuficiente para 5)</span></p>
+                            <p>Para <em>n</em> = 2: <code>2<sup>2</sup> = 4</code> subredes <span>(Insuficiente para 5)</span></p>
+                            <p><strong>Para <em>n</em> = 3: <code>2<sup>3</sup> = 8</code> subredes</strong> <span>(¡Cumple el requisito! Se prestan 3 bits de la porción de host)</span></p>
+                        </div>
+                        <p>Al prestar 3 bits, el nuevo prefijo CIDR será: <strong>CIDR = 24 + 3 = /27</strong>.</p>
+                        <p>Los bits restantes para host serán: <strong><em>h</em> = 8 &minus; 3 = 5 bits</strong>.</p>
+                    </div>
+
+                    <!-- Paso 3 -->
+                    <div class="paso" id="paso3" hidden>
+                        <p class="etiqueta-paso">PASO 3 DE 5 · MÁSCARA Y VALIDACIÓN DE CAPACIDAD</p>
+                        <h3 tabindex="-1">Determina la Máscara y Valida la Capacidad</h3>
+                        <p>Convierte el nuevo prefijo <code>/27</code> a notación decimal punteada y comprueba que los bits de host satisfagan el requerimiento.</p>
+                        <div class="operaciones">
+                            <p><strong>Desglose del 4.° octeto en binario:</strong> <code>11100000</code></p>
+                            <p>Valor decimal: <code>128 + 64 + 32 = <strong>224</strong></code></p>
+                            <p><strong>Máscara de subred resultante:</strong> <code>255.255.255.224</code></p>
+                            <p><strong>Comprobación de hosts útiles:</strong> <code>2<sup>h</sup> &minus; 2 = 2<sup>5</sup> &minus; 2 = 32 &minus; 2 = <strong>30 hosts utilizables</strong></code></p>
+                        </div>
+                        <div class="aviso">
+                            <strong>Validación exitosa:</strong> 30 &ge; 30 hosts. Si el requerimiento hubiera sido de 31 hosts, un prefijo /27 no habría sido suficiente y la red base /24 no podría haber abastecido 5 subredes con FLSM.
+                        </div>
+                    </div>
+
+                    <!-- Paso 4 -->
+                    <div class="paso" id="paso4" hidden>
+                        <p class="etiqueta-paso">PASO 4 DE 5 · NÚMERO MÁGICO Y REDES</p>
+                        <h3 tabindex="-1">Calcula el Salto (Número Mágico) y Enumera las Redes</h3>
+                        <p>El salto constante entre subredes consecutivas se obtiene restando el valor del octeto modificado a 256:</p>
+                        <div class="operaciones">
+                            <p><strong>Fórmula del Salto:</strong> <code>Salto = 256 &minus; Máscara del octeto modificado</code></p>
+                            <p><code>Salto = 256 &minus; 224 = <strong>32</strong></code> (aplicado en el 4.° octeto)</p>
+                        </div>
+                        <p>Secuencia aritmética de las ocho direcciones de red:</p>
+                        <div class="secuencia">
+                            <code>.0</code><span>→</span>
+                            <code>.32</code><span>→</span>
+                            <code>.64</code><span>→</span>
+                            <code>.96</code><span>→</span>
+                            <code>.128</code><span>→</span>
+                            <code>.160</code><span>→</span>
+                            <code>.192</code><span>→</span>
+                            <code>.224</code>
+                        </div>
+                        <p>Las 5 primeras subredes cubren los 5 segmentos requeridos; las subredes 6, 7 y 8 quedan como <strong>reserva estratégica</strong>.</p>
+                    </div>
+
+                    <!-- Paso 5 -->
+                    <div class="paso" id="paso5" hidden>
+                        <p class="etiqueta-paso">PASO 5 DE 5 · DELIMITACIÓN DE RANGOS</p>
+                        <h3 tabindex="-1">Calcula el Rango de Hosts y la Dirección de Broadcast</h3>
+                        <p>Para cada bloque de subred, las direcciones se delimitan mediante tres reglas fijas:</p>
+                        <ul class="lista-datos">
+                            <li><strong>Primer host utilizable:</strong> Dirección de red + 1</li>
+                            <li><strong>Dirección de broadcast:</strong> Siguiente dirección de red &minus; 1 (o Red + Salto &minus; 1)</li>
+                            <li><strong>Último host utilizable:</strong> Broadcast &minus; 1</li>
+                        </ul>
+                        <div class="operaciones">
+                            <p><strong>Ejemplo con la Subred 3:</strong> Red = <code>192.168.5.64/27</code></p>
+                            <p>Primer Host: <code>64 + 1 = <strong>192.168.5.65</strong></code></p>
+                            <p>Broadcast: <code>64 + 32 &minus; 1 = <strong>192.168.5.95</strong></code></p>
+                            <p>Último Host: <code>95 &minus; 1 = <strong>192.168.5.94</strong></code></p>
+                        </div>
+                    </div>
+
+                    <!-- Controles interactivos de navegación -->
+                    <div class="controles-pasos" id="controlesPasos" hidden>
+                        <button class="boton boton-secundario" type="button" id="btnAnterior">← Anterior</button>
+                        <p id="progreso" aria-live="polite">Paso 1 de 5</p>
+                        <button class="boton boton-azul" type="button" id="btnSiguiente">Siguiente Paso →</button>
+                    </div>
+                </section>
+
+                <!-- 04 / Ejemplo Resuelto -->
+                <section class="caja" id="ejemplo">
+                    <p class="sobretexto">04 / CASO DE ESTUDIO OFICIAL</p>
+                    <h2>Tabla de Subredes Resuelta: 192.168.5.0/24 a /27</h2>
+                    <p>Resumen numérico de la división de la red de origen en 8 bloques de 32 direcciones con máscara <code>255.255.255.224</code>:</p>
+                    
+                    <div class="resumen-ejemplo">
+                        <div>
+                            <small>PREFIJO CIDR</small>
+                            <strong>/27</strong>
+                        </div>
+                        <div>
+                            <small>MÁSCARA DECIMAL</small>
+                            <strong>255.255.255.224</strong>
+                        </div>
+                        <div>
+                            <small>SALTO CONSTANTE</small>
+                            <strong>32</strong>
+                        </div>
+                        <div>
+                            <small>HOSTS ÚTILES / SUBRED</small>
+                            <strong>30</strong>
+                        </div>
+                    </div>
+
+                    <p class="texto-pequeno">💡 En dispositivos móviles o pantallas reducidas, desliza la tabla horizontalmente para ver todos los campos.</p>
+                    
+                    <div class="tabla-contenedor" tabindex="0" role="region" aria-label="Tabla completa de las 8 subredes calculadas con FLSM">
+                        <table>
+                            <caption>División completa de 192.168.5.0/24 en 8 subredes /27 (5 operativas + 3 en reserva)</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Subred #</th>
+                                    <th scope="col">Dirección de Red</th>
+                                    <th scope="col">Primer Host Útil</th>
+                                    <th scope="col">Último Host Útil</th>
+                                    <th scope="col">Dirección de Broadcast</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">1</th>
+                                    <td>192.168.5.0/27</td>
+                                    <td>192.168.5.1</td>
+                                    <td>192.168.5.30</td>
+                                    <td>192.168.5.31</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">2</th>
+                                    <td>192.168.5.32/27</td>
+                                    <td>192.168.5.33</td>
+                                    <td>192.168.5.62</td>
+                                    <td>192.168.5.63</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">3</th>
+                                    <td>192.168.5.64/27</td>
+                                    <td>192.168.5.65</td>
+                                    <td>192.168.5.94</td>
+                                    <td>192.168.5.95</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">4</th>
+                                    <td>192.168.5.96/27</td>
+                                    <td>192.168.5.97</td>
+                                    <td>192.168.5.126</td>
+                                    <td>192.168.5.127</td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">5</th>
+                                    <td>192.168.5.128/27</td>
+                                    <td>192.168.5.129</td>
+                                    <td>192.168.5.158</td>
+                                    <td>192.168.5.159</td>
+                                </tr>
+                                <tr class="reserva">
+                                    <th scope="row">6 <small>Reserva</small></th>
+                                    <td>192.168.5.160/27</td>
+                                    <td>192.168.5.161</td>
+                                    <td>192.168.5.190</td>
+                                    <td>192.168.5.191</td>
+                                </tr>
+                                <tr class="reserva">
+                                    <th scope="row">7 <small>Reserva</small></th>
+                                    <td>192.168.5.192/27</td>
+                                    <td>192.168.5.193</td>
+                                    <td>192.168.5.222</td>
+                                    <td>192.168.5.223</td>
+                                </tr>
+                                <tr class="reserva">
+                                    <th scope="row">8 <small>Reserva</small></th>
+                                    <td>192.168.5.224/27</td>
+                                    <td>192.168.5.225</td>
+                                    <td>192.168.5.254</td>
+                                    <td>192.168.5.255</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- 05 / Laboratorio y Simulador FLSM en Vivo -->
+                <section class="caja laboratorio" id="laboratorio">
+                    <div class="laboratorio-header">
+                        <div>
+                            <p class="sobretexto">05 / EXPERIMENTACIÓN EN VIVO</p>
+                            <h2>Laboratorio Interactivo de Subneteo FLSM</h2>
+                            <p>Visualiza cómo se distribuyen los 32 bits y calcula cualquier escenario de subneteo en tiempo real.</p>
+                        </div>
+                    </div>
+
+                    <!-- Inspector de 32 bits reactivo -->
+                    <div class="inspector-bits">
+                        <div class="inspector-titulo">
+                            <h3>Inspector Binario de 32 Bits</h3>
+                            <div class="leyenda-bits">
+                                <div class="leyenda-item"><span class="leyenda-color color-red"></span> Red Base</div>
+                                <div class="leyenda-item"><span class="leyenda-color color-subred"></span> Bits Prestados</div>
+                                <div class="leyenda-item"><span class="leyenda-color color-host"></span> Bits de Host</div>
+                            </div>
+                        </div>
+
+                        <!-- Selector / Slider de CIDR -->
+                        <div class="slider-cidr-box">
+                            <label for="sliderCidr">Prefijo CIDR de Prueba:</label>
+                            <input type="range" id="sliderCidr" min="24" max="30" value="27" step="1" aria-label="Ajustar prefijo CIDR">
+                            <span class="slider-valor" id="valCidr">/27</span>
+                        </div>
+
+                        <!-- Grilla interactiva de los 4 octetos -->
+                        <div class="octetos-grid" id="octetosContainer" aria-label="Visualización de los 4 octetos en binario"></div>
+
+                        <div class="metodologia-grid" style="margin-top:16px;">
+                            <div class="metodologia-paso">
+                                <strong>Máscara Resultante</strong>
+                                <span id="mascaraCalculada" style="font-family:var(--font-mono); font-weight:700;">255.255.255.224</span>
+                            </div>
+                            <div class="metodologia-paso">
+                                <strong>Subredes Generadas (2<sup>n</sup>)</strong>
+                                <span id="subredesGeneradasBits" style="font-family:var(--font-mono); font-weight:700; color:var(--c-subnet);">8</span>
+                            </div>
+                            <div class="metodologia-paso">
+                                <strong>Hosts Útiles / Subred (2<sup>h</sup> &minus; 2)</strong>
+                                <span id="hostsUtilesBits" style="font-family:var(--font-mono); font-weight:700; color:var(--c-host);">30</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Calculadora / Simulador dinámico FLSM -->
+                    <div class="simulador-form">
+                        <h3>Simulador y Generador Dinámico de Subredes</h3>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Ingresa tus parámetros o selecciona un caso de estudio típico para generar la tabla completa al vuelo:</p>
+                        
+                        <div class="simulador-presets">
+                            <span>Casos rápidos:</span>
+                            <button type="button" class="preset-btn" data-ip="192.168.5.0" data-cidr="24" data-modo="subredes" data-cant="5">192.168.5.0/24 (5 subredes - Proyecto)</button>
+                            <button type="button" class="preset-btn" data-ip="172.16.0.0" data-cidr="16" data-modo="subredes" data-cant="4">172.16.0.0/16 (4 subredes)</button>
+                            <button type="button" class="preset-btn" data-ip="10.0.0.0" data-cidr="8" data-modo="subredes" data-cant="16">10.0.0.0/8 (16 subredes)</button>
+                            <button type="button" class="preset-btn" data-ip="192.168.1.0" data-cidr="24" data-modo="hosts" data-cant="30">192.168.1.0/24 (30 hosts/subred)</button>
+                        </div>
+
+                        <div class="simulador-inputs">
+                            <div class="input-group">
+                                <label for="calcIp">Dirección IP de Red Base:</label>
+                                <input type="text" id="calcIp" value="192.168.5.0" placeholder="Ej. 192.168.5.0">
+                            </div>
+                            <div class="input-group">
+                                <label for="calcCidrBase">Prefijo Base Original:</label>
+                                <select id="calcCidrBase">
+                                    <option value="8">/8 (255.0.0.0 - Clase A)</option>
+                                    <option value="16">/16 (255.255.0.0 - Clase B)</option>
+                                    <option value="24" selected>/24 (255.255.255.0 - Clase C)</option>
+                                    <option value="25">/25</option>
+                                    <option value="26">/26</option>
+                                    <option value="27">/27</option>
+                                    <option value="28">/28</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="calcModo">Criterio de Cálculo:</label>
+                                <select id="calcModo">
+                                    <option value="subredes" selected>Subredes Requeridas</option>
+                                    <option value="hosts">Hosts Útiles Requeridos</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label for="calcCantidad">Cantidad Requerida:</label>
+                                <input type="number" id="calcCantidad" value="5" min="1" max="254">
+                            </div>
+                        </div>
+
+                        <button type="button" class="boton boton-azul" id="btnCalcular">Calcular y Generar Tabla</button>
+                        <p id="simuladorMensaje" class="aviso" style="border-left-color:var(--c-error); color:var(--c-error);" hidden></p>
+
+                        <!-- Resultados en métricas del cálculo -->
+                        <div class="simulador-resultados">
+                            <div class="metricas-grid">
+                                <div class="metrica-card">
+                                    <small>Nuevo Prefijo</small>
+                                    <strong id="resNuevoCidr">/27</strong>
+                                </div>
+                                <div class="metrica-card">
+                                    <small>Nueva Máscara</small>
+                                    <strong id="resNuevaMascara">255.255.255.224</strong>
+                                </div>
+                                <div class="metrica-card">
+                                    <small>Salto (Número Mágico)</small>
+                                    <strong id="resSalto">32</strong>
+                                </div>
+                                <div class="metrica-card">
+                                    <small>Total Subredes</small>
+                                    <strong id="resTotalSubredes">8 (3 bits)</strong>
+                                </div>
+                                <div class="metrica-card">
+                                    <small>Hosts Útiles / Subred</small>
+                                    <strong id="resHostsPorSubred">30 útiles</strong>
+                                </div>
+                            </div>
+
+                            <div class="tabla-acciones">
+                                <button type="button" class="boton boton-secundario boton-sm" id="btnCopiarTabla">Copiar Tabla al Portapapeles</button>
+                            </div>
+
+                            <!-- Tabla Dinámica generada por JS -->
+                            <div class="tabla-contenedor" tabindex="0" role="region" aria-label="Tabla de subredes generada por la calculadora">
+                                <table id="tablaDinamica">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Subred #</th>
+                                            <th scope="col">Dirección de Red</th>
+                                            <th scope="col">Primer Host</th>
+                                            <th scope="col">Último Host</th>
+                                            <th scope="col">Broadcast</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tablaDinamicaCuerpo"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 06 / Cuestionario de Autoevaluación -->
+                <section class="caja" id="practica">
+                    <p class="sobretexto">06 / AUTOEVALUACIÓN FORMATIVA</p>
+                    <h2>Pon a Prueba lo que Aprendiste</h2>
+                    <p>Responde las 5 preguntas basadas en el caso de estudio de la red <code>192.168.5.0/24</code>. Al verificar, recibirás tu puntuación y retroalimentación pedagógica detallada por cada reactivo.</p>
+                    
+                    <form id="formFLSM">
+                        <!-- Pregunta 1 -->
+                        <fieldset class="pregunta">
+                            <legend>1. En el método FLSM, ¿todas las subredes creadas utilizan exactamente la misma máscara?</legend>
+                            <label><input type="radio" name="p1" value="V"> Verdadero</label>
+                            <label><input type="radio" name="p1" value="F"> Falso</label>
+                            <p class="retroalimentacion" id="respuesta1" hidden></p>
+                        </fieldset>
+
+                        <!-- Pregunta 2 -->
+                        <fieldset class="pregunta">
+                            <legend>2. Una subred /27 permite asignar sus 32 direcciones IP totales a dispositivos terminales (hosts ordinarios).</legend>
+                            <label><input type="radio" name="p2" value="V"> Verdadero</label>
+                            <label><input type="radio" name="p2" value="F"> Falso</label>
+                            <p class="retroalimentacion" id="respuesta2" hidden></p>
+                        </fieldset>
+
+                        <!-- Pregunta 3 -->
+                        <div class="pregunta">
+                            <label class="pregunta-titulo" for="p3">3. ¿Cuántos bits se deben pedir prestados como mínimo para obtener al menos 5 subredes?</label>
+                            <select name="p3" id="p3">
+                                <option value="">Selecciona tu respuesta...</option>
+                                <option value="1">1 bit (genera 2 subredes)</option>
+                                <option value="2">2 bits (genera 4 subredes)</option>
+                                <option value="3">3 bits (genera 8 subredes)</option>
+                                <option value="5">5 bits (genera 32 subredes)</option>
+                            </select>
+                            <p class="retroalimentacion" id="respuesta3" hidden></p>
+                        </div>
+
+                        <!-- Pregunta 4 -->
+                        <div class="pregunta">
+                            <label class="pregunta-titulo" for="p4">4. ¿Cuál es la máscara de subred en notación decimal correspondiente al prefijo /27?</label>
+                            <select name="p4" id="p4">
+                                <option value="">Selecciona tu respuesta...</option>
+                                <option value="192">255.255.255.192</option>
+                                <option value="224">255.255.255.224</option>
+                                <option value="240">255.255.255.240</option>
+                                <option value="0">255.255.255.0</option>
+                            </select>
+                            <p class="retroalimentacion" id="respuesta4" hidden></p>
+                        </div>
+
+                        <!-- Pregunta 5 -->
+                        <fieldset class="pregunta">
+                            <legend>5. En la 3.ª subred (192.168.5.64/27), ¿cuál es la dirección IP de difusión (Broadcast)?</legend>
+                            <label><input type="radio" name="p5" value="65"> 192.168.5.65</label>
+                            <label><input type="radio" name="p5" value="94"> 192.168.5.94</label>
+                            <label><input type="radio" name="p5" value="95"> 192.168.5.95</label>
+                            <label><input type="radio" name="p5" value="96"> 192.168.5.96</label>
+                            <p class="retroalimentacion" id="respuesta5" hidden></p>
+                        </fieldset>
+
+                        <div class="acciones-formulario">
+                            <button type="submit" id="btnVerificar" class="boton boton-azul">Verificar Mis Respuestas</button>
+                            <button type="reset" class="boton boton-secundario">Reiniciar Formulario</button>
+                        </div>
+                    </form>
+
+                    <p id="resultado" class="mensaje-resultado" role="status" aria-live="polite" aria-atomic="true"></p>
+                </section>
+
+                <!-- 07 / Errores Frecuentes y Glosario -->
+                <section class="caja" id="errores">
+                    <p class="sobretexto">07 / PREVENCIÓN DE ERRORES Y GLOSARIO</p>
+                    <h2>Errores Frecuentes en el Subneteo FLSM</h2>
+                    <div class="errores">
+                        <div>
+                            <h3>Contar solo las subredes y olvidar los hosts</h3>
+                            <p>Calcular <code>2<sup>n</sup> &ge; N</code> no garantiza que la subred cumpla con los hosts requeridos. Siempre verifica que <code>2<sup>h</sup> &minus; 2 &ge; Hosts requeridos</code>.</p>
+                        </div>
+                        <div>
+                            <h3>Confundir la IP de Red con el Primer Host</h3>
+                            <p>La dirección de red (ej. <code>.64</code>) identifica al bloque. El primer host asignable es siempre la dirección inmediata siguiente (ej. <code>.65</code>).</p>
+                        </div>
+                        <div>
+                            <h3>Asumir que el salto es siempre 32</h3>
+                            <p>El salto de 32 corresponde exclusivamente al prefijo <code>/27</code>. Para un <code>/26</code> el salto es 64, para un <code>/28</code> es 16, etc.</p>
+                        </div>
+                        <div>
+                            <h3>Ignorar las subredes sobrantes</h3>
+                            <p>Si solicitas 5 subredes y prestas 3 bits, se generan 8 subredes matemáticas. No las descartes: deben registrarse como subredes de reserva.</p>
+                        </div>
+                    </div>
+
+                    <!-- Acordeón del Glosario Técnico -->
+                    <h3 style="margin-top:32px;">Glosario Técnico Interactivo</h3>
+                    <div class="glosario-acordeon">
+                        <div class="glosario-item">
+                            <button type="button" class="glosario-header" aria-expanded="false">
+                                <span>¿Qué es el Número Mágico o Salto de Red?</span>
+                                <span aria-hidden="true">+</span>
+                            </button>
+                            <div class="glosario-cuerpo" hidden>
+                                Es el tamaño del bloque de direcciones asignadas a cada subred. Se calcula restando a 256 el valor decimal del octeto donde ocurrió la división en la máscara de subred (<code>256 &minus; Máscara del octeto</code>). Indica de cuánto en cuánto aumentan las direcciones de red consecutivas.
+                            </div>
+                        </div>
+
+                        <div class="glosario-item">
+                            <button type="button" class="glosario-header" aria-expanded="false">
+                                <span>¿Por qué se restan 2 direcciones en la fórmula de hosts (2<sup>h</sup> &minus; 2)?</span>
+                                <span aria-hidden="true">+</span>
+                            </button>
+                            <div class="glosario-cuerpo" hidden>
+                                Por norma del protocolo IPv4 (RFC 791), la primera dirección del bloque tiene todos sus bits de host en <code>0</code> y está reservada para identificar a la red misma. La última dirección tiene todos sus bits de host en <code>1</code> y está reservada para la difusión o broadcast de esa subred. Por lo tanto, no pueden configurarse en ninguna tarjeta de red.
+                            </div>
+                        </div>
+
+                        <div class="glosario-item">
+                            <button type="button" class="glosario-header" aria-expanded="false">
+                                <span>¿Cuál es la diferencia principal entre FLSM y VLSM?</span>
+                                <span aria-hidden="true">+</span>
+                            </button>
+                            <div class="glosario-cuerpo" hidden>
+                                En <strong>FLSM</strong> todas las subredes tienen la misma máscara y la misma cantidad de hosts. En <strong>VLSM</strong> (Máscara de Subred de Longitud Variable), se pueden aplicar máscaras distintas a cada subred (por ejemplo, /26 para 60 hosts y /30 para enlaces seriales de 2 hosts), evitando el desperdicio masivo de direcciones IP.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 08 / Metodología de Maybel Gil Álvarez y EDT -->
+                <section class="caja" id="metodologia">
+                    <p class="sobretexto">08 / INGENIERÍA Y GESTIÓN DE PROYECTO</p>
+                    <h2>Desarrollo Basado en la Metodología de Maybel Gil Álvarez</h2>
+                    <p>Este sitio web educativo no fue generado al azar; fue planificado y ejecutado rigurosamente siguiendo las fases de desarrollo de hipermedios y recursos web educativos de <strong>Maybel Gil Álvarez</strong>, partiendo de la delimitación pedagógica, la Estructura de Desglose del Trabajo (EDT) y el cronograma de actividades.</p>
+
+                    <div class="metodologia-card">
+                        <h3>Estructura de Desglose del Trabajo (EDT / WBS) en 7 Fases</h3>
+                        <div class="metodologia-grid">
+                            <div class="metodologia-paso">
+                                <strong>1.0 Análisis y Definición</strong>
+                                <p>Delimitación de la temática (FLSM en IPv4), perfil del estudiante y revisión de RFCs (RFC 1878, RFC 791).</p>
+                            </div>
+                            <div class="metodologia-paso">
+                                <strong>2.0 Planificación y Gestión</strong>
+                                <p>Construcción de la EDT de 7 niveles y cronograma de actividades tipo Gantt en 4 semanas.</p>
+                            </div>
+                            <div class="metodologia-paso">
+                                <strong>3.0 Diseño Instruccional</strong>
+                                <p>Guion pedagógico de los 5 pasos, caso de estudio 192.168.5.0/24 y árbol de navegación hipermedial.</p>
+                            </div>
+                            <div class="metodologia-paso">
+                                <strong>4.0 Diseño UI/UX (No Genérico)</strong>
+                                <p>Tokens de diseño técnico, tipografía monoespaciada de alta precisión y wireframes responsivos.</p>
+                            </div>
+                            <div class="metodologia-paso">
+                                <strong>5.0 Desarrollo Frontend</strong>
+                                <p>HTML5 semántico, CSS3 modular puro con variables y JavaScript vanilla matemático sin frameworks.</p>
+                            </div>
+                            <div class="metodologia-paso">
+                                <strong>6.0 Aseguramiento de Calidad</strong>
+                                <p>Matriz de 10 casos de prueba: validación matemática, responsive (320px-1920px) y accesibilidad WCAG AA.</p>
+                            </div>
+                        </div>
+
+                        <div class="aviso" style="margin-top:16px;">
+                            <strong>Memoria Técnica Completa:</strong> Puedes consultar el documento formal de especificación metodológica en el archivo <a href="DOCUMENTACION_PROYECTO_FLSM.md" target="_blank" style="font-weight:700;">DOCUMENTACION_PROYECTO_FLSM.md</a>, el cual incluye los 11 puntos requeridos, la matriz de riesgos, el diccionario EDT y el cronograma detallado.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 09 / Fuentes y Referencias Técnicas -->
+                <section class="caja" id="recursos">
+                    <p class="sobretexto">09 / DOCUMENTACIÓN TÉCNICA OFICIAL</p>
+                    <h2>Fuentes Normativas y Referencias</h2>
+                    <p>Los estándares y principios matemáticos implementados en este recurso se fundamentan en las siguientes publicaciones del IETF y referencias técnicas:</p>
+                    
+                    <ul class="recursos">
+                        <li>
+                            <a href="https://www.rfc-editor.org/rfc/rfc791" target="_blank" rel="noopener noreferrer">
+                                <strong>RFC 791: Internet Protocol (IP Specification) <span aria-hidden="true">↗</span></strong>
+                            </a>
+                            <p>Estándar original de DARPA que define la arquitectura de 32 bits, encabezados y direccionamiento de IPv4.</p>
+                        </li>
+                        <li>
+                            <a href="https://www.rfc-editor.org/rfc/rfc950" target="_blank" rel="noopener noreferrer">
+                                <strong>RFC 950: Internet Standard Subnetting Procedure <span aria-hidden="true">↗</span></strong>
+                            </a>
+                            <p>Procedimiento formal estandarizado para la creación de subredes y máscaras a nivel de capa de red.</p>
+                        </li>
+                        <li>
+                            <a href="https://www.rfc-editor.org/rfc/rfc1878" target="_blank" rel="noopener noreferrer">
+                                <strong>RFC 1878: Variable Length Subnet Table For IPv4 <span aria-hidden="true">↗</span></strong>
+                            </a>
+                            <p>Tablas canónicas de prefijos CIDR, máscaras de subred, capacidades de bloques y rangos de hosts útiles.</p>
+                        </li>
+                        <li>
+                            <a href="https://www.rfc-editor.org/rfc/rfc3021" target="_blank" rel="noopener noreferrer">
+                                <strong>RFC 3021: Using 31-Bit Prefixes on IPv4 Point-to-Point Links <span aria-hidden="true">↗</span></strong>
+                            </a>
+                            <p>Documento de referencia para el tratamiento especial de enlaces seriales punto a punto sin dirección de broadcast.</p>
+                        </li>
+                    </ul>
+
+                    <div class="cierre">
+                        <h3>Secuencia de Aprendizaje Completada</h3>
+                        <p>Has recorrido la teoría, el caso de estudio resuelto, el laboratorio interactivo y la evaluación formativa. Aplica esta misma secuencia de 5 pasos a tus proyectos de infraestructura de red.</p>
+                        <a class="boton boton-azul" href="#laboratorio">Ir al Simulador Dinámico →</a>
+                    </div>
+                </section>
+            </article>
+        </div>
+    </main>
+
+    <!-- Pie de página académico -->
+    <footer>
+        <div class="contenedor pie">
+            <div>
+                <a class="marca marca-pie" href="#inicio">
+                    <span class="logotipo" aria-hidden="true">/27</span>
+                    <div class="marca-info">
+                        <strong>FLSM Lab & Guide</strong>
+                        <small>Proyecto Educativo Web</small>
+                    </div>
+                </a>
+                <p style="margin-top: 10px;">Diseño, desarrollo y documentación conforme a la metodología de Maybel Gil Álvarez.<br>Asignatura: Programación Web · 2026</p>
+            </div>
+            <div class="pie-enlaces">
+                <a href="#inicio">Volver arriba ↑</a>
+                <a href="#metodologia">Metodología y EDT</a>
+                <a href="#laboratorio">Simulador</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
